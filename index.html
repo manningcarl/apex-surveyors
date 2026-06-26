@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex Chartered Surveyors — RICS Surveys &amp; Valuations, London &amp; South East</title>
+  <meta name="description" content="Apex Chartered Surveyors — independent RICS-regulated surveys, valuations, party wall matters and planning consultancy across London and the South East." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Apex Chartered Surveyors",
+    "url": "https://apex.dev.spacequests.uk",
+    "telephone": "+442079460958",
+    "email": "enquiries@apexsurveyors.co.uk",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Richmond",
+      "addressRegion": "London",
+      "addressCountry": "GB"
+    },
+    "areaServed": [
+      { "@type": "City", "name": "Richmond" },
+      { "@type": "City", "name": "London" },
+      { "@type": "City", "name": "Guildford" },
+      { "@type": "City", "name": "Woking" },
+      { "@type": "City", "name": "Epsom" },
+      { "@type": "City", "name": "Croydon" },
+      { "@type": "City", "name": "Reigate" }
+    ],
+    "description": "Independent RICS-regulated surveys, valuations, party wall matters and planning consultancy across London and the South East.",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Surveying Services",
+      "itemListElement": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Residential Surveys (RICS Level 2 and Level 3)" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Commercial Property Surveys" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Valuations" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Party Wall Matters" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Building Surveys" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Planning Consultancy" } }
+      ]
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --navy: #1c2e4a;
+      --navy-dark: #0d1b35;
+      --navy-mid: #243b5e;
+      --gold: #c9a462;
+      --gold-dark: #b08a3e;
+      --gold-light: #dfc080;
+      --cream: #f7f4ee;
+      --cream-dark: #ede9df;
+      --ink: #111827;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --white: #ffffff;
+      --gray-line: #e2ddd4;
+      --shadow: 0 4px 24px rgba(28,46,74,0.08);
+      --shadow-lg: 0 8px 40px rgba(28,46,74,0.14);
+      --radius: 4px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; max-width: 100%; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--white); }
+    h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; line-height: 1.2; }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    /* ─── UTILITIES ─── */
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+    .section--cream { background: var(--cream); }
+    .section--navy { background: var(--navy-dark); color: var(--white); }
+    .section-title { font-size: clamp(28px, 4vw, 42px); margin-bottom: 14px; color: var(--navy); }
+    .section--navy .section-title { color: var(--white); }
+    .section-sub { color: var(--text-muted); font-size: 17px; max-width: 640px; line-height: 1.75; }
+    .section--navy .section-sub { color: rgba(255,255,255,0.7); }
+    .center { text-align: center; }
+    .center .section-sub { margin: 0 auto; }
+
+    /* Gold rule divider */
+    .rule { display: flex; align-items: center; gap: 12px; margin: 14px 0 36px; }
+    .rule::before, .rule::after { content: ''; flex: 1; height: 1px; background: var(--gray-line); }
+    .center .rule::before, .center .rule::after { max-width: 80px; flex: none; }
+    .center .rule { justify-content: center; }
+    .rule-gem { width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg); flex-shrink: 0; }
+    .section--navy .rule::before, .section--navy .rule::after { background: rgba(255,255,255,0.15); }
+
+    /* ─── BUTTONS ─── */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s; border: none; letter-spacing: 0.3px; }
+    .btn-gold { background: var(--gold); color: var(--navy-dark); }
+    .btn-gold:hover { background: var(--gold-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,164,98,0.35); }
+    .btn-navy { background: var(--navy); color: var(--white); }
+    .btn-navy:hover { background: var(--navy-mid); transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,0.55); }
+    .btn-outline:hover { background: var(--white); color: var(--navy-dark); }
+    .btn-outline-navy { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+    .btn-outline-navy:hover { background: var(--navy); color: var(--white); }
+    .btn-lg { padding: 17px 36px; font-size: 16px; }
+    .cta-group { display: flex; flex-wrap: wrap; gap: 14px; }
+
+    /* ─── NAV ─── */
+    nav { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--gray-line); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
+    .logo { display: flex; align-items: center; gap: 14px; }
+    .logo-mark { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; }
+    .logo-mark svg { display: block; }
+    .logo-text { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; }
+    .logo-apex { font-size: 22px; color: var(--navy-dark); letter-spacing: 0.5px; }
+    .logo-sub { font-size: 10px; font-family: 'Inter', sans-serif; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-muted); display: block; margin-top: -2px; }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-link { font-size: 14px; font-weight: 500; color: var(--text-muted); padding: 8px 14px; transition: color 0.2s; }
+    .nav-link:hover { color: var(--navy); }
+    .nav-cta { display: flex; gap: 10px; }
+    .nav-cta .btn { padding: 10px 20px; font-size: 13px; }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: linear-gradient(rgba(13,27,53,0.62), rgba(13,27,53,0.82)), url('images/hero.jpg') center 50% / cover no-repeat;
+      background-color: var(--navy-dark);
+      color: var(--white);
+      padding: 120px 0 100px;
+    }
+    .hero-inner { max-width: 660px; }
+    .hero-eyebrow { display: inline-block; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; border-left: 2px solid var(--gold); padding-left: 14px; }
+    .hero h1 { font-size: clamp(36px, 5.5vw, 60px); margin-bottom: 20px; line-height: 1.12; }
+    .hero h1 em { font-style: italic; color: var(--gold); }
+    .hero-tagline { font-size: 18px; opacity: 0.88; margin-bottom: 36px; line-height: 1.7; max-width: 540px; font-weight: 300; }
+    .hero-credentials { display: flex; align-items: center; gap: 24px; margin-top: 40px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.15); }
+    .hero-cred { text-align: center; }
+    .hero-cred-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 2px; }
+    .hero-cred-value { font-family: 'Playfair Display', serif; font-size: 15px; color: rgba(255,255,255,0.85); }
+    .hero-cred-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); }
+
+    /* ─── SERVICES ─── */
+    .services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 48px; border: 1px solid var(--gray-line); }
+    .service-card { padding: 32px 36px; border-right: 1px solid var(--gray-line); border-bottom: 1px solid var(--gray-line); }
+    .service-card:nth-child(2n) { border-right: none; }
+    .service-card:nth-last-child(-n+2) { border-bottom: none; }
+    .service-icon { width: 40px; height: 3px; background: var(--gold); margin-bottom: 20px; }
+    .service-card h3 { font-size: 19px; color: var(--navy); margin-bottom: 10px; }
+    .service-card p { color: var(--text-muted); font-size: 15px; line-height: 1.75; }
+    .service-card .service-link { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--gold-dark); letter-spacing: 0.5px; }
+    .service-card .service-link::after { content: '→'; }
+
+    /* ─── ACCREDITATIONS ─── */
+    .accred-strip { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 40px; margin-top: 48px; }
+    .accred-badge { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .accred-logo { width: 80px; height: 80px; border: 1px solid var(--gray-line); display: flex; align-items: center; justify-content: center; background: var(--white); }
+    .accred-logo-text { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--navy); letter-spacing: 1px; }
+    .accred-name { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); text-align: center; max-width: 120px; line-height: 1.5; }
+    .accred-separator { width: 1px; height: 80px; background: var(--gray-line); }
+    .accred-statement { margin-top: 40px; text-align: center; }
+    .accred-statement p { font-size: 15px; color: var(--text-muted); max-width: 580px; margin: 0 auto; line-height: 1.75; }
+    .accred-statement strong { color: var(--navy); }
+
+    /* ─── CASE STUDIES ─── */
+    .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; }
+    .case-card { background: var(--white); border: 1px solid var(--gray-line); padding: 36px; position: relative; }
+    .case-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); border: 1px solid var(--gold); padding: 4px 12px; margin-bottom: 18px; }
+    .case-card h3 { font-size: 21px; color: var(--navy); margin-bottom: 12px; line-height: 1.3; }
+    .case-card .case-brief { color: var(--text-muted); font-size: 15px; line-height: 1.75; margin-bottom: 20px; }
+    .case-outcomes { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .case-outcomes li { font-size: 14px; color: var(--text); padding-left: 18px; position: relative; line-height: 1.6; }
+    .case-outcomes li::before { content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); }
+    .case-meta { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--gray-line); display: flex; gap: 24px; }
+    .case-meta-item { font-size: 12px; }
+    .case-meta-item span { display: block; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
+    .case-meta-item strong { color: var(--navy); font-size: 13px; font-weight: 600; }
+
+    /* ─── TEAM ─── */
+    .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; max-width: 820px; margin-left: auto; margin-right: auto; }
+    .team-card { text-align: center; }
+    .team-photo-wrap { width: 200px; height: 250px; margin: 0 auto 24px; overflow: hidden; background: var(--cream-dark); }
+    .team-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    .team-card h3 { font-size: 20px; color: var(--navy); margin-bottom: 4px; }
+    .team-designation { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 8px; }
+    .team-title { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; }
+    .team-bio { font-size: 14px; color: var(--text-muted); line-height: 1.75; max-width: 320px; margin: 0 auto; }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+    .testimonial-card { background: var(--white); border: 1px solid var(--gray-line); padding: 28px 28px 24px; position: relative; }
+    .testimonial-card::before { content: '\201C'; position: absolute; top: 16px; left: 24px; font-family: 'Playfair Display', serif; font-size: 48px; color: var(--gold); opacity: 0.5; line-height: 1; }
+    .testimonial-text { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-top: 16px; font-style: italic; }
+    .testimonial-author { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gray-line); }
+    .testimonial-name { font-size: 14px; font-weight: 600; color: var(--navy); }
+    .testimonial-detail { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .stars { color: var(--gold); font-size: 13px; margin-bottom: 4px; letter-spacing: 1px; }
+
+    /* ─── FAQ ─── */
+    .faq-list { margin-top: 40px; display: flex; flex-direction: column; gap: 0; max-width: 780px; margin-left: auto; margin-right: auto; border: 1px solid var(--gray-line); }
+    details { overflow: hidden; border-bottom: 1px solid var(--gray-line); }
+    details:last-child { border-bottom: none; }
+    details summary { padding: 22px 28px; font-weight: 600; font-size: 16px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--navy); background: var(--white); }
+    details[open] summary { background: var(--cream); }
+    details summary::after { content: '+'; font-size: 22px; color: var(--gold); transition: transform 0.2s; flex-shrink: 0; font-weight: 300; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details summary::-webkit-details-marker { display: none; }
+    .faq-body { padding: 0 28px 22px; color: var(--text-muted); line-height: 1.75; font-size: 15px; background: var(--cream); }
+
+    /* ─── SERVICE AREA ─── */
+    .areas-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start; margin-top: 48px; }
+    #coverage-map { height: 420px; overflow: hidden; box-shadow: var(--shadow); }
+    .areas-intro { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: 20px; }
+    .areas-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .area-chip { background: var(--white); border: 1px solid var(--gray-line); border-left: 3px solid var(--gold); padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--navy); letter-spacing: 0.3px; }
+
+    /* ─── DOWNLOAD / PDF ─── */
+    .download-card { background: var(--navy); color: var(--white); padding: 48px; display: flex; align-items: center; gap: 48px; margin-top: 48px; }
+    .download-icon { width: 64px; height: 80px; background: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .download-icon svg { display: block; }
+    .download-content h3 { font-size: 24px; color: var(--white); margin-bottom: 8px; }
+    .download-content p { font-size: 15px; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 20px; }
+
+    /* ─── CONTACT FORM ─── */
+    .contact-layout { display: grid; grid-template-columns: 1fr 420px; gap: 64px; margin-top: 48px; }
+    .contact-info h3 { font-size: 22px; color: var(--navy); margin-bottom: 16px; }
+    .contact-info p { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: 28px; }
+    .contact-detail { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+    .contact-detail-icon { width: 40px; height: 40px; background: var(--cream); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .contact-detail-icon svg { color: var(--gold); }
+    .contact-detail-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
+    .contact-detail-value { font-size: 15px; font-weight: 600; color: var(--navy); }
+    .contact-detail-value a:hover { color: var(--gold-dark); }
+    .enquiry-form { background: var(--cream); padding: 36px; }
+    .enquiry-form h3 { font-size: 20px; color: var(--navy); margin-bottom: 24px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--gray-line); background: var(--white); font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--navy); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .form-privacy { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-top: 14px; }
+
+    /* ─── CTA BAND ─── */
+    .cta-band { background: var(--navy-dark); color: var(--white); padding: 80px 0; text-align: center; }
+    .cta-band h2 { font-size: clamp(28px, 4vw, 44px); margin-bottom: 14px; color: var(--white); }
+    .cta-band h2 em { font-style: italic; color: var(--gold); }
+    .cta-band p { font-size: 18px; opacity: 0.8; margin-bottom: 36px; font-weight: 300; }
+    .cta-band .cta-group { justify-content: center; }
+
+    /* ─── FOOTER ─── */
+    footer { background: #0a0f1e; color: rgba(255,255,255,0.55); padding: 56px 0 28px; }
+    .footer-inner { display: flex; gap: 48px; margin-bottom: 48px; flex-wrap: wrap; }
+    .footer-brand { flex: 2; min-width: 240px; }
+    .footer-logo-mark { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .footer-logo-apex { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--white); }
+    .footer-logo-sub { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); display: block; margin-top: -1px; }
+    .footer-desc { font-size: 14px; line-height: 1.75; max-width: 300px; }
+    .footer-col { flex: 1; min-width: 140px; }
+    .footer-col h4 { color: var(--white); font-size: 11px; font-weight: 700; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 2px; font-family: 'Inter', sans-serif; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li { font-size: 14px; }
+    .footer-col ul li a:hover { color: var(--white); }
+    .footer-rics { display: flex; align-items: center; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .footer-rics-badge { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 900; color: var(--white); background: rgba(255,255,255,0.1); padding: 4px 10px; letter-spacing: 1px; }
+    .footer-rics span { font-size: 12px; color: rgba(255,255,255,0.4); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; flex-wrap: wrap; gap: 10px; }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 1000px) {
+      .contact-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .service-card { border-right: none; }
+      .service-card:nth-last-child(-n+2) { border-bottom: 1px solid var(--gray-line); }
+      .service-card:last-child { border-bottom: none; }
+      .case-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+      .testimonial-grid { grid-template-columns: 1fr; }
+      .areas-layout { grid-template-columns: 1fr; }
+      #coverage-map { height: 300px; }
+      .download-card { flex-direction: column; gap: 24px; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+      .hero-credentials { flex-wrap: wrap; gap: 16px; }
+      .hero-cred-divider { display: none; }
+      nav .nav-link { display: none; }
+    }
+    @media (max-width: 600px) {
+      .section { padding: 56px 0; }
+      .hero { padding: 72px 0 64px; }
+      .team-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .enquiry-form { padding: 24px; }
+      .areas-list { grid-template-columns: 1fr 1fr; }
+      .nav-cta .btn span.label { display: none; }
+      .nav-cta .btn { padding: 9px 14px; }
+      .accred-strip { gap: 24px; }
+      .accred-separator { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-mark">
+        <svg width="28" height="32" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="14,2 28,30 0,30" fill="#c9a462"/>
+          <polygon points="14,10 22,28 6,28" fill="#1c2e4a"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-apex">Apex</span>
+        <span class="logo-sub">Chartered Surveyors</span>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#team" class="nav-link">Team</a>
+      <a href="#faq" class="nav-link">FAQs</a>
+      <a href="#contact" class="nav-link">Contact</a>
+      <div class="nav-cta">
+        <a href="tel:+442079460958" class="btn btn-outline-navy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          <span class="label">020 7946 0958</span>
+        </a>
+        <a href="#contact" class="btn btn-gold">
+          <span class="label">Book a Survey</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="container hero-inner">
+    <span class="hero-eyebrow">RICS Regulated · Richmond, London</span>
+    <h1>Property surveys you can <em>rely on</em></h1>
+    <p class="hero-tagline">Apex Chartered Surveyors provides independent, expert property surveys, valuations and advice across London and the South East — trusted by buyers, lenders and solicitors.</p>
+    <div class="cta-group">
+      <a href="#contact" class="btn btn-gold btn-lg">Book a Survey</a>
+      <a href="apex-service-guide.pdf" download class="btn btn-outline btn-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11zm-3-7l-3 3-3-3 1.4-1.4 1.6 1.6V9h2v5.2l1.6-1.6L15 13z"/></svg>
+        Download Service Guide
+      </a>
+    </div>
+    <div class="hero-credentials">
+      <div class="hero-cred">
+        <span class="hero-cred-label">Regulated by</span>
+        <span class="hero-cred-value">RICS</span>
+      </div>
+      <div class="hero-cred-divider"></div>
+      <div class="hero-cred">
+        <span class="hero-cred-label">Service area</span>
+        <span class="hero-cred-value">London &amp; South East</span>
+      </div>
+      <div class="hero-cred-divider"></div>
+      <div class="hero-cred">
+        <span class="hero-cred-label">Specialists in</span>
+        <span class="hero-cred-value">Residential &amp; Commercial</span>
+      </div>
+      <div class="hero-cred-divider"></div>
+      <div class="hero-cred">
+        <span class="hero-cred-label">Turnaround</span>
+        <span class="hero-cred-value">Reports within 5 days</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ACCREDITATIONS ─── -->
+<section class="section section--cream" id="accreditations">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">Regulated &amp; Accredited</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+      <p class="section-sub">Every survey and valuation we carry out is governed by RICS standards — the benchmark for professional competence in property.</p>
+    </div>
+    <div class="accred-strip">
+      <div class="accred-badge">
+        <div class="accred-logo">
+          <span class="accred-logo-text">RICS</span>
+        </div>
+        <span class="accred-name">RICS Regulated Firm</span>
+      </div>
+      <div class="accred-separator"></div>
+      <div class="accred-badge">
+        <div class="accred-logo" style="background:var(--navy-dark);">
+          <span class="accred-logo-text" style="color:var(--gold);font-size:16px;text-align:center;line-height:1.2;">MRICS<br>FRICS</span>
+        </div>
+        <span class="accred-name">Chartered Members &amp; Fellows</span>
+      </div>
+    </div>
+    <div class="accred-statement">
+      <p>As an <strong>RICS Regulated Firm</strong>, Apex Chartered Surveyors operates under the RICS Rules of Conduct. Our surveyors hold <strong>MRICS</strong> and <strong>FRICS</strong> designations — the highest professional standards in the industry. We carry full professional indemnity insurance and act solely in the interest of our clients.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICES ─── -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">Our Services</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+      <p class="section-sub">A complete surveying practice — from straightforward HomeBuyer reports to complex commercial assessments and party wall disputes.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon"></div>
+        <h3>Residential Surveys</h3>
+        <p>RICS Level 2 HomeBuyer Reports and Level 3 Building Surveys for all property types — from Victorian terraces to modern flats. Clear, plain-English reports that tell you exactly what you're buying.</p>
+        <span class="service-link">Level 2 &amp; Level 3</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"></div>
+        <h3>Commercial Property Surveys</h3>
+        <p>Condition reports, dilapidations assessments and acquisition surveys for offices, retail, industrial and mixed-use properties across London and the South East.</p>
+        <span class="service-link">All commercial types</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"></div>
+        <h3>Valuations</h3>
+        <p>RICS Red Book valuations for purchase, sale, probate, matrimonial, and Help to Buy. Prepared to the RICS Valuation — Global Standards, accepted by all major lenders.</p>
+        <span class="service-link">Residential &amp; commercial</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"></div>
+        <h3>Party Wall Matters</h3>
+        <p>Act as agreed surveyor, building owner's surveyor, or adjoining owner's surveyor. Party wall notices, awards, and dispute resolution handled with minimal disruption to all parties.</p>
+        <span class="service-link">Party Wall Act 1996</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"></div>
+        <h3>Building Surveys</h3>
+        <p>Detailed structural assessments for older, unusual or high-value properties. Identifies defects, estimates repair costs, and flags areas for further investigation — essential before buying.</p>
+        <span class="service-link">Full structural inspection</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"></div>
+        <h3>Planning Consultancy</h3>
+        <p>Pre-application advice, planning statements, listed building consent and appeals. Drawing on established relationships with local planning authorities across London and Surrey.</p>
+        <span class="service-link">London &amp; Surrey boroughs</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CASE STUDIES ─── -->
+<section class="section section--cream" id="case-studies">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">Recent Work</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+      <p class="section-sub">A selection of recent instructions — anonymised in keeping with client confidentiality.</p>
+    </div>
+    <div class="case-grid">
+      <div class="case-card">
+        <span class="case-tag">Residential — Level 3</span>
+        <h3>Victorian End-of-Terrace, South West London</h3>
+        <p class="case-brief">Instructed by a buyer prior to exchange on a four-bedroom Victorian property. The estate agent's valuation had given the building a clean bill of health. Our Level 3 Building Survey identified significant issues the buyer was unaware of.</p>
+        <ul class="case-outcomes">
+          <li>Active damp ingress identified in two ground-floor rooms, with evidence of failed historic remediation</li>
+          <li>Structural movement to the rear return — flagged for further investigation by a structural engineer</li>
+          <li>Roof covering at end of serviceable life — estimated replacement cost provided</li>
+          <li>Client renegotiated a £38,000 reduction to the purchase price</li>
+        </ul>
+        <div class="case-meta">
+          <div class="case-meta-item"><span>Property type</span><strong>Victorian terrace, c.1890</strong></div>
+          <div class="case-meta-item"><span>Service</span><strong>RICS Level 3 Building Survey</strong></div>
+          <div class="case-meta-item"><span>Report delivered</span><strong>4 working days</strong></div>
+        </div>
+      </div>
+      <div class="case-card">
+        <span class="case-tag">Commercial — Acquisition</span>
+        <h3>Mixed-Use Retail &amp; Office, Central London</h3>
+        <p class="case-brief">Instructed by a property investment company acquiring a mixed-use freehold. The client required a comprehensive condition report ahead of a commercial mortgage application and to inform their refurbishment budget.</p>
+        <ul class="case-outcomes">
+          <li>Full condition assessment across three retail units and four upper-floor offices</li>
+          <li>Service infrastructure identified as life-expired — mechanical and electrical systems required full replacement</li>
+          <li>Asbestos-containing materials located and documented; specialist survey recommended</li>
+          <li>Cost plan provided to support board-level investment decision</li>
+        </ul>
+        <div class="case-meta">
+          <div class="case-meta-item"><span>Property type</span><strong>Mixed-use freehold</strong></div>
+          <div class="case-meta-item"><span>Service</span><strong>Commercial Acquisition Survey</strong></div>
+          <div class="case-meta-item"><span>Report delivered</span><strong>5 working days</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TEAM ─── -->
+<section class="section" id="team">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">The Team</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+      <p class="section-sub">A small practice — which means your survey is always carried out by a qualified chartered surveyor, not a junior.</p>
+    </div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-photo-wrap">
+          <img src="images/team-1.jpg" alt="James Hartley FRICS, Director, Apex Chartered Surveyors" />
+        </div>
+        <h3>James Hartley</h3>
+        <span class="team-designation">FRICS</span>
+        <p class="team-title">Director &amp; Founder</p>
+        <p class="team-bio">James founded Apex after fifteen years with two of London's leading independent practices. He specialises in high-value residential surveys and commercial acquisitions across Central London and the wider South East.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-photo-wrap">
+          <img src="images/team-2.jpg" alt="Sarah Chen MRICS, Chartered Surveyor, Apex Chartered Surveyors" />
+        </div>
+        <h3>Sarah Chen</h3>
+        <span class="team-designation">MRICS</span>
+        <p class="team-title">Chartered Surveyor</p>
+        <p class="team-bio">Sarah joined Apex from a regional practice where she led the party wall and planning team. She handles RICS Level 2 and Level 3 residential surveys, valuations and party wall matters across South West London and Surrey.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ─── -->
+<section class="section section--cream" id="testimonials">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">What Clients Say</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">James's Level 3 survey identified damp and structural movement that the seller's estate agent had completely glossed over. The report was clear, detailed and gave us exactly what we needed to renegotiate. Highly recommended.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-name">M. Beaumont</div>
+          <div class="testimonial-detail">Richmond — RICS Level 3 Building Survey</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">We used Apex for a commercial acquisition in Clerkenwell. The report was thorough, the turnaround was fast, and James's advice on the dilapidations position saved us from a costly mistake. We'll use them again without question.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-name">L. Ashworth</div>
+          <div class="testimonial-detail">Central London — Commercial Acquisition Survey</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Sarah handled our party wall matter efficiently and professionally. She communicated clearly with our neighbour's surveyor and kept us informed throughout. The award was agreed without any dispute or delay.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-name">The Okafor Family</div>
+          <div class="testimonial-detail">Wimbledon — Party Wall Award</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DOWNLOAD ─── -->
+<section class="section" id="download">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">Not Sure Which Survey You Need?</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+      <p class="section-sub">Download our free service guide — it explains the difference between Level 2 and Level 3 surveys, when a valuation is required, and how party wall matters work.</p>
+    </div>
+    <div class="download-card">
+      <div class="download-icon">
+        <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="40" fill="#c9a462"/>
+          <path d="M8 14h16M8 20h16M8 26h10" stroke="#1c2e4a" stroke-width="2" stroke-linecap="square"/>
+        </svg>
+      </div>
+      <div class="download-content">
+        <h3>Apex Chartered Surveyors — Service Guide</h3>
+        <p>An overview of our six service lines: which survey is right for your property, what to expect on the day, how long it takes, and how to read your report. Plain English, no jargon.</p>
+        <a href="apex-service-guide.pdf" download class="btn btn-gold">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11zm-3-7l-3 3-3-3 1.4-1.4 1.6 1.6V9h2v5.2l1.6-1.6L15 13z"/></svg>
+          Download PDF — Free
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section class="section section--cream" id="faq">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">Common Questions</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary>What is the difference between a Level 2 and Level 3 survey?</summary>
+        <div class="faq-body">A <strong>Level 2 HomeBuyer Report</strong> is a standard survey suited to conventionally built, modern properties in reasonable condition. It identifies significant defects and maintenance issues using a traffic-light rating system.<br><br>A <strong>Level 3 Building Survey</strong> is a full structural inspection — recommended for older properties, unusual construction, or anything that has been substantially altered. It provides a detailed assessment of every element of the building, including inaccessible areas, and gives estimated repair costs.</div>
+      </details>
+      <details>
+        <summary>Do I need a survey or a valuation?</summary>
+        <div class="faq-body">A <strong>survey</strong> assesses the condition of a property — identifying defects, risks and maintenance requirements. A <strong>valuation</strong> gives an independent opinion of market value, typically required by a mortgage lender or for legal purposes such as probate or matrimonial proceedings.<br><br>In many cases buyers need both — a survey to check the building and a valuation to satisfy their lender. We can carry out both and combine the visit, saving time and cost.</div>
+      </details>
+      <details>
+        <summary>How long does a survey take, and when will I receive the report?</summary>
+        <div class="faq-body">Most residential inspections take between two and four hours on site, depending on the size and complexity of the property. Commercial properties may take longer. We aim to deliver written reports within <strong>five working days</strong> of inspection — and can often turn reports around more quickly if an exchange deadline requires it. Let us know your timeline when you book.</div>
+      </details>
+      <details>
+        <summary>What does a party wall surveyor do?</summary>
+        <div class="faq-body">Under the <strong>Party Wall etc. Act 1996</strong>, certain types of building work — including extensions, loft conversions, and excavations near a boundary — require formal notice to be served on adjoining owners. A party wall surveyor draws up a <strong>Party Wall Award</strong>, a legally binding document that protects the interests of all parties and governs how the work is carried out.<br><br>We can act as the building owner's surveyor, the adjoining owner's surveyor, or as an agreed surveyor for both parties.</div>
+      </details>
+      <details>
+        <summary>Are your valuations accepted by mortgage lenders?</summary>
+        <div class="faq-body">Yes. Our valuations are prepared in accordance with the <strong>RICS Valuation — Global Standards (Red Book)</strong> and are accepted by all major UK mortgage lenders, as well as HMRC, the courts, and other statutory bodies.</div>
+      </details>
+      <details>
+        <summary>What areas do you cover?</summary>
+        <div class="faq-body">We cover <strong>London and the South East</strong> — including all London boroughs, Surrey, Kent, East Sussex and West Sussex. Our offices are based in Richmond, and we regularly carry out instructions across Central London, South West London, and the Home Counties. Not sure if we cover your area? Call or email us and we'll confirm.</div>
+      </details>
+      <details>
+        <summary>How do I instruct you?</summary>
+        <div class="faq-body">Fill in the enquiry form on this page, call us on <a href="tel:+442079460958" style="color:var(--gold-dark);font-weight:600;">020 7946 0958</a>, or email <a href="mailto:enquiries@apexsurveyors.co.uk" style="color:var(--gold-dark);font-weight:600;">enquiries@apexsurveyors.co.uk</a>. We'll come back to you within one working day to confirm availability, agree a fee, and arrange the inspection.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICE AREA ─── -->
+<section class="section" id="areas">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">Where We Work</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+      <p class="section-sub">Based in Richmond, we cover the full extent of London and the South East — including all London boroughs and the Home Counties.</p>
+    </div>
+    <div class="areas-layout">
+      <div id="coverage-map"></div>
+      <div>
+        <p class="areas-intro">We carry out instructions across <strong>London and the South East</strong>. Areas we cover regularly include:</p>
+        <div class="areas-list">
+          <div class="area-chip">Richmond</div>
+          <div class="area-chip">Kensington</div>
+          <div class="area-chip">Chelsea</div>
+          <div class="area-chip">Wandsworth</div>
+          <div class="area-chip">Putney</div>
+          <div class="area-chip">Wimbledon</div>
+          <div class="area-chip">Kingston</div>
+          <div class="area-chip">Guildford</div>
+          <div class="area-chip">Woking</div>
+          <div class="area-chip">Epsom</div>
+          <div class="area-chip">Croydon</div>
+          <div class="area-chip">Reigate</div>
+          <div class="area-chip">City of London</div>
+          <div class="area-chip">Canary Wharf</div>
+          <div class="area-chip">Clerkenwell</div>
+          <div class="area-chip">All Boroughs</div>
+        </div>
+        <p style="margin-top:20px;font-size:14px;color:var(--text-muted);line-height:1.7;">Not listed? Call us — we almost certainly cover your area. <a href="tel:+442079460958" style="color:var(--gold-dark);font-weight:600;">020 7946 0958</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section class="section section--cream" id="contact">
+  <div class="container">
+    <div class="center">
+      <h2 class="section-title">Get in Touch</h2>
+      <div class="rule"><div class="rule-gem"></div></div>
+      <p class="section-sub">We respond to all enquiries within one working day. Tell us about your property and we'll confirm availability and provide a fee quote.</p>
+    </div>
+    <div class="contact-layout">
+      <div>
+        <h3>Contact Details</h3>
+        <p>For straightforward enquiries, call or email us directly. For an urgent survey ahead of exchange, phone is the quickest route.</p>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#c9a462"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <div>
+            <div class="contact-detail-label">Telephone</div>
+            <div class="contact-detail-value"><a href="tel:+442079460958">020 7946 0958</a></div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a462" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="contact-detail-label">Email</div>
+            <div class="contact-detail-value"><a href="mailto:enquiries@apexsurveyors.co.uk">enquiries@apexsurveyors.co.uk</a></div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a462" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="contact-detail-label">Location</div>
+            <div class="contact-detail-value">Richmond, London TW9</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a462" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div>
+            <div class="contact-detail-label">Office Hours</div>
+            <div class="contact-detail-value">Mon–Fri, 8:30am–6:00pm</div>
+          </div>
+        </div>
+      </div>
+      <div class="enquiry-form">
+        <h3>Send an Enquiry</h3>
+        <form action="https://formspree.io/f/enquiries" method="POST">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" name="name" placeholder="Jane Smith" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="07xxx xxxxxx" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="service">Service Required</label>
+            <select id="service" name="service" required>
+              <option value="" disabled selected>Select a service…</option>
+              <option>RICS Level 2 HomeBuyer Report</option>
+              <option>RICS Level 3 Building Survey</option>
+              <option>Commercial Property Survey</option>
+              <option>Valuation</option>
+              <option>Party Wall Matters</option>
+              <option>Planning Consultancy</option>
+              <option>Not sure — please advise</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="property">Property Address or Postcode</label>
+            <input type="text" id="property" name="property" placeholder="e.g. SW15 1AB or full address" />
+          </div>
+          <div class="form-group">
+            <label for="message">Anything else we should know?</label>
+            <textarea id="message" name="message" placeholder="e.g. exchange deadline, specific concerns, property age…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-navy" style="width:100%;justify-content:center;">Submit Enquiry</button>
+          <p class="form-privacy">Your details are used only to respond to your enquiry. We do not share your information with third parties.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA BAND ─── -->
+<section class="cta-band">
+  <div class="container">
+    <h2>Ready to instruct a <em>survey</em>?</h2>
+    <p>Call us or send an enquiry — we'll come back to you within one working day.</p>
+    <div class="cta-group">
+      <a href="#contact" class="btn btn-gold btn-lg">Book a Survey</a>
+      <a href="tel:+442079460958" class="btn btn-outline btn-lg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        020 7946 0958
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo-mark">
+          <svg width="22" height="26" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="14,2 28,30 0,30" fill="#c9a462"/>
+            <polygon points="14,10 22,28 6,28" fill="#0d1b35"/>
+          </svg>
+          <div>
+            <span class="footer-logo-apex">Apex</span>
+            <span class="footer-logo-sub">Chartered Surveyors</span>
+          </div>
+        </div>
+        <p class="footer-desc">Independent RICS-regulated surveys, valuations and property advice across London and the South East. Based in Richmond, TW9.</p>
+        <div class="footer-rics">
+          <span class="footer-rics-badge">RICS</span>
+          <span>Regulated Firm — MRICS &amp; FRICS Surveyors</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Residential Surveys</a></li>
+          <li><a href="#services">Commercial Surveys</a></li>
+          <li><a href="#services">Valuations</a></li>
+          <li><a href="#services">Party Wall Matters</a></li>
+          <li><a href="#services">Building Surveys</a></li>
+          <li><a href="#services">Planning Consultancy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Areas</h4>
+        <ul>
+          <li><a href="#areas">Richmond &amp; SW London</a></li>
+          <li><a href="#areas">Central London</a></li>
+          <li><a href="#areas">Surrey</a></li>
+          <li><a href="#areas">Kent &amp; Sussex</a></li>
+          <li><a href="#areas">All Coverage Areas</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+442079460958">020 7946 0958</a></li>
+          <li><a href="mailto:enquiries@apexsurveyors.co.uk">enquiries@apexsurveyors.co.uk</a></li>
+          <li><a href="#contact">Send an Enquiry</a></li>
+          <li><a href="apex-service-guide.pdf" download>Download Service Guide</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Apex Chartered Surveyors. All rights reserved. Registered in England &amp; Wales.</span>
+      <span>RICS Regulated Firm · Richmond, London</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('coverage-map', { scrollWheelZoom: false }).setView([51.4600, -0.2600], 9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 18
+  }).addTo(map);
+
+  const goldIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:10px;height:10px;background:#c9a462;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);transform:rotate(45deg);"></div>',
+    iconSize: [10, 10],
+    iconAnchor: [5, 5]
+  });
+
+  const areas = [
+    { name: 'Richmond',      lat: 51.4613, lng: -0.3037 },
+    { name: 'Kensington',    lat: 51.5008, lng: -0.1919 },
+    { name: 'Chelsea',       lat: 51.4875, lng: -0.1687 },
+    { name: 'Wandsworth',    lat: 51.4567, lng: -0.1921 },
+    { name: 'Putney',        lat: 51.4613, lng: -0.2161 },
+    { name: 'Wimbledon',     lat: 51.4215, lng: -0.2062 },
+    { name: 'Kingston',      lat: 51.4085, lng: -0.3064 },
+    { name: 'Guildford',     lat: 51.2362, lng: -0.5704 },
+    { name: 'Woking',        lat: 51.3193, lng: -0.5573 },
+    { name: 'Epsom',         lat: 51.3355, lng: -0.2693 },
+    { name: 'Croydon',       lat: 51.3762, lng: -0.0982 },
+    { name: 'Reigate',       lat: 51.2371, lng: -0.2050 },
+    { name: 'City of London',lat: 51.5155, lng: -0.0922 },
+    { name: 'Canary Wharf',  lat: 51.5054, lng: -0.0235 },
+    { name: 'Clerkenwell',   lat: 51.5225, lng: -0.1056 }
+  ];
+
+  areas.forEach(a => {
+    L.marker([a.lat, a.lng], { icon: goldIcon }).addTo(map).bindPopup(`<strong style="font-family:serif;">${a.name}</strong>`);
+  });
+</script>
+
+</body>
+</html>
